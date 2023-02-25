@@ -1,19 +1,24 @@
-src_get_opt = Source_files/GetOptions.c
+src_get_opt 		= Source_files/GetOptions.c
+src_api_hdr_get_opt = Source_files/GetOptions_api.h
+api_api_hdr_get_opt	= API/Header_files
 
-so_opt		= Dynamic_libraries/libGetOptions.so
+so_opt				= API/Dynamic_libraries/libGetOptions.so
 
-shell_dirs	= Shell_files/directories.sh
+shell_dirs			= Shell_files/directories.sh
 
-all: directories clean opt.so msg
+all: directories clean opt.so header msg
 
 directories:
 	@./$(shell_dirs)
 
+clean:
+	rm -rf API/Dynamic_libraries/* API/Header_files/*
+
 opt.so: $(src_get_opt)
 	gcc -Wall -g -fPIC -shared $(src_get_opt) -o $(so_opt)
 
-clean:
-	rm -rf Dynamic_libraries/*
+header:
+	cp $(src_api_hdr_get_opt) $(api_api_hdr_get_opt)
 
 msg:
 	@echo "**************************************************************************************";
