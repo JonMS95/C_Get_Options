@@ -1,6 +1,5 @@
 #include <stdio.h>      // printf
 #include <getopt.h>     // getopt, optarg, ...
-#include <stdbool.h>    // bool
 #include <string.h>     // strlen
 #include <stdlib.h>     // atoi
 #include "GetOptions.h"
