@@ -1,6 +1,8 @@
 #ifndef GET_OPTIONS_API_H
 #define GET_OPTIONS_API_H
 
+#include <stdbool.h>    // bool
+
 #define MAX_DETAIL_LEN  100
 
 typedef struct 
