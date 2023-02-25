@@ -1,6 +1,8 @@
 #ifndef GET_OPTIONS_H
 #define GET_OPTIONS_H
 
+#include "GetOptions_api.h"
+
 #define HAS_VALUE_OFF   false
 #define HAS_VALUE_ON    true
 
@@ -11,7 +13,5 @@
 #define ERR_OPT_NEEDS_VALUE         -2
 #define ERR_OPT_VALUE_OUT_OF_BOUNDS -3
 #define ERR_OPT_DOES_NOT_EXIST      -4
-
-#include "GetOptions_api.h"
 
 #endif
