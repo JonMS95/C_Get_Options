@@ -3,6 +3,7 @@
 #include <string.h>     // strlen
 #include <stdlib.h>     // atoi
 #include "GetOptions.h"
+#include "../Dependency_files/Header_files/SeverityLog_api.h"
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief Generates a string including the options that are meant to be inputed properly formatted.
@@ -52,7 +53,7 @@ int ParseArguments(int argc, char** argv, option_description* option_descr, int 
                 // If so, checki if the option has already been assigned a value.
                 if(option_descr[curr_opt].assigned_value != 0)
                 {
-                    printf("Value already assigned to the current parameter (%s).\r\n", option_descr[curr_opt].detail);
+                    SeverityLog(SVRTY_LVL_ERR, "Value already assigned to the current parameter (%s).\r\n", option_descr[curr_opt].detail);
                     return ERR_OPT_ALREADY_VALUED;
                 }
                 
@@ -67,7 +68,7 @@ int ParseArguments(int argc, char** argv, option_description* option_descr, int 
                 // It may also happen that the option's value is assumed to be the following parameter's first character (-p).
                 if( (optarg == NULL) || (optarg[0] == '-') )
                 {
-                    printf("A value should be passed to the current parameter (%s).\r\n", option_descr[curr_opt].detail);
+                    SeverityLog(SVRTY_LVL_ERR, "A value should be passed to the current parameter (%s).\r\n", option_descr[curr_opt].detail);
                     return ERR_OPT_NEEDS_VALUE;
                 }
                 
@@ -77,9 +78,9 @@ int ParseArguments(int argc, char** argv, option_description* option_descr, int 
                 // Check if the option value is out of boundaries or not.
                 if(option_int < option_descr[curr_opt].min_value || option_int > option_descr[curr_opt].max_value)
                 {
-                    printf("Provided option value is out of boundaries (%s) [%d-%d]\r\n.",  option_descr[curr_opt].detail   ,
-                                                                                            option_descr[curr_opt].min_value,
-                                                                                            option_descr[curr_opt].max_value);
+                    SeverityLog(SVRTY_LVL_ERR, "Provided option value is out of boundaries (%s) [%d-%d].\r\n",  option_descr[curr_opt].detail   ,
+                                                                                                                option_descr[curr_opt].min_value,
+                                                                                                                option_descr[curr_opt].max_value);
                     return ERR_OPT_VALUE_OUT_OF_BOUNDS;
                 }
 
@@ -92,7 +93,7 @@ int ParseArguments(int argc, char** argv, option_description* option_descr, int 
         // If (iterator value) == (option_descr_size), it means that the option has noot been found.
         if(curr_opt == option_descr_size)
         {
-            printf("Option %c does not exist.\r\n", option);
+            SeverityLog(SVRTY_LVL_ERR, "Option %c does not exist.\r\n", option);
             return ERR_OPT_DOES_NOT_EXIST;
         }
     }
