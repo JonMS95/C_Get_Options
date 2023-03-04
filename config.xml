@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <!-- Directory structure -->
+    <Directories>
+        <Dynamic_libraries/>
+        <API>
+            <Header_files/>
+            <Dynamic_libraries/>
+        </API>
+        <Dependency_files>
+            <Header_files/>
+            <!-- No DL required for the current project. -->
+            <!-- <Dynamic_libraries/> -->
+        </Dependency_files>
+    </Directories>
+    <!-- API files -->
+    <API>
+        <Header_files
+            HeaderPath="Source_files/GetOptions_api.h"
+        />
+        <Dynamic_libraries
+            SOPath="Dynamic_libraries/libGetOptions.so"
+        />
+    </API>
+    <!-- Dependencies -->
+    <Dependencies>
+        <Header_files
+            HeaderPath="/home/jon/Desktop/scripts/C/C_Severity_Log/API/Header_files/SeverityLog_api.h"
+        />
+        <!-- No DL required for the current project. -->
+        <!-- <Dynamic_libraries/> -->
+    </Dependencies>
+</config>
