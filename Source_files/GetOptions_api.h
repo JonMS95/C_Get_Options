@@ -17,5 +17,6 @@ typedef struct
 }option_description;
 
 int GetOptions(int argc, char** argv, option_description* option_descr, int option_descr_size, char* opt_short);
+void ShowOptions(option_description* option_descr, int option_descr_size);
 
 #endif

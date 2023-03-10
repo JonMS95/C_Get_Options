@@ -115,3 +115,15 @@ int GetOptions(int argc, char** argv, option_description* option_descr, int opti
     PreParseOptions(option_descr, option_descr_size, opt_short);
     return ParseArguments(argc, argv, option_descr, option_descr_size, opt_short);
 }
+
+void ShowOptions(option_description* option_descr, int option_descr_size)
+{
+    SeverityLog(SVRTY_LVL_INF, "*********** Option resume ***********\r\n");
+    
+    for(int i = 0; i < option_descr_size; i++)
+    {
+        SeverityLog(SVRTY_LVL_INF, "%s: %d\r\n", option_descr[i].detail, option_descr[i].assigned_value);
+    }
+
+    SeverityLog(SVRTY_LVL_INF, "*************************************\r\n");
+}
