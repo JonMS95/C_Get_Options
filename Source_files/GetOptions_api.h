@@ -3,16 +3,33 @@
 
 #include <stdbool.h>    // bool
 
-#define MAX_DETAIL_LEN  100
+#define GETOPT_MAX_DETAIL_LEN  100
+
+#define GETOPT_VAR_TYPE_BOOL   0
+#define GETOPT_VAR_TYPE_INT    1
+#define GETOPT_VAR_TYPE_CHAR   2
+#define GETOPT_VAR_TYPE_FLOAT  3
+
+typedef union
+{
+    bool    boolean;
+    int     integer;
+    char    character;
+    float   floating;
+
+}option_data;
+
 
 typedef struct 
 {
-    char    opt_char;
-    char    detail[MAX_DETAIL_LEN];
-    bool    has_value;
-    int     min_value;
-    int     max_value;
-    int     assigned_value;
+    char        opt_char;
+    char        detail[GETOPT_MAX_DETAIL_LEN];
+    bool        has_value;
+    int         var_type;
+    option_data min_value;
+    option_data max_value;
+    option_data assigned_value;
+    option_data default_value;
 
 }option_description;
 

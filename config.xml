@@ -2,6 +2,8 @@
 <config>
     <!-- Directory structure -->
     <Directories>
+        <Object_files/>
+        <Executable_files/>
         <Dynamic_libraries/>
         <API>
             <Header_files/>
@@ -9,8 +11,7 @@
         </API>
         <Dependency_files>
             <Header_files/>
-            <!-- No DL required for the current project. -->
-            <!-- <Dynamic_libraries/> -->
+            <Dynamic_libraries/>
         </Dependency_files>
     </Directories>
     <!-- API files -->
@@ -27,7 +28,8 @@
         <Header_files
             HeaderPath="/home/jon/Desktop/scripts/C/C_Severity_Log/API/Header_files/SeverityLog_api.h"
         />
-        <!-- No DL required for the current project. -->
-        <!-- <Dynamic_libraries/> -->
+        <Dynamic_libraries
+            SOPath="/home/jon/Desktop/scripts/C/C_Severity_Log/API/Dynamic_libraries/libSeverityLog.so"
+        />
     </Dependencies>
 </config>

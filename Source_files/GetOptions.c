@@ -20,13 +20,69 @@ void PreParseOptions(option_description* option_descr, int option_descr_size, ch
     {
         option_short[strlen(option_short)] = option_descr[i].opt_char;
 
-        if(option_descr[i].has_value == HAS_VALUE_ON)
+        if(option_descr[i].var_type != GETOPT_VAR_TYPE_BOOL)
         {
             option_short[strlen(option_short)] = COLON_CHAR;
         }
     }
 
     strcpy(opt_short, option_short);
+}
+
+int SetOptionValue(option_description* opt_descr, char* target_value)
+{
+    switch (opt_descr->var_type)
+    {
+        case GETOPT_VAR_TYPE_BOOL:
+        {
+            SeverityLog(SVRTY_LVL_WNG, "Boundaries are ignored for bool data type.\r\n");
+            opt_descr->assigned_value.integer = atoi(target_value);
+        }
+        break;
+        
+        case GETOPT_VAR_TYPE_INT:
+        {
+            opt_descr->assigned_value.integer = atoi((char*)target_value);
+            if( opt_descr->assigned_value.integer < opt_descr->min_value.integer ||
+                opt_descr->assigned_value.integer > opt_descr->max_value.integer)
+            {
+                return ERR_OPT_VALUE_OUT_OF_BOUNDS;
+            }
+        }
+        break;
+
+        case GETOPT_VAR_TYPE_CHAR:
+        {
+            opt_descr->assigned_value.character = target_value;
+            if( opt_descr->assigned_value.character < opt_descr->min_value.character ||
+                opt_descr->assigned_value.character > opt_descr->max_value.character)
+            {
+                return ERR_OPT_VALUE_OUT_OF_BOUNDS;
+            }
+        }
+        break;
+
+        case GETOPT_VAR_TYPE_FLOAT:
+        {
+            opt_descr->assigned_value.floating = atof(target_value);
+            if( opt_descr->assigned_value.floating < opt_descr->min_value.floating ||
+                opt_descr->assigned_value.floating > opt_descr->max_value.floating)
+            {
+                return ERR_OPT_VALUE_OUT_OF_BOUNDS;
+            }
+        }
+        break;
+
+        default:
+        {
+            SeverityLog(SVRTY_LVL_ERR, "Unknown option variable type.\r\n");
+            return ERR_OPT_UNKNOWN_VAR_TYPE;
+        }
+        break;
+    }
+
+    opt_descr->has_value = true;
+    return 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -47,20 +103,26 @@ int ParseArguments(int argc, char** argv, option_description* option_descr, int 
     {
         for(curr_opt = 0; curr_opt < option_descr_size; curr_opt++)
         {
-            // Check if the option exists within option_descr. 
+            // Check if the option exists within option_descr.
             if(option == option_descr[curr_opt].opt_char)
             {
-                // If so, checki if the option has already been assigned a value.
-                if(option_descr[curr_opt].assigned_value != 0)
+                // If so, check if the option has already been assigned a value.
+                if(option_descr[curr_opt].has_value == true)
                 {
                     SeverityLog(SVRTY_LVL_ERR, "Value already assigned to the current parameter (%s).\r\n", option_descr[curr_opt].detail);
                     return ERR_OPT_ALREADY_VALUED;
                 }
                 
                 // Check if the option is binary, or if any value requires to be provided instead.
-                if(option_descr[curr_opt].has_value == HAS_VALUE_OFF)
+                if(option_descr[curr_opt].var_type == GETOPT_VAR_TYPE_BOOL)
                 {
-                    option_descr[curr_opt].assigned_value = true;
+                    char bool_value = "1";
+                    int set_opt_val = SetOptionValue(&option_descr[curr_opt], &bool_value);
+                    if(set_opt_val < 0)
+                    {
+                        SeverityLog(SVRTY_LVL_ERR, "Unknown variable type.\r\n");
+                        return ERR_OPT_UNKNOWN_VAR_TYPE;
+                    }
                     break;
                 }
 
@@ -71,21 +133,33 @@ int ParseArguments(int argc, char** argv, option_description* option_descr, int 
                     SeverityLog(SVRTY_LVL_ERR, "A value should be passed to the current parameter (%s).\r\n", option_descr[curr_opt].detail);
                     return ERR_OPT_NEEDS_VALUE;
                 }
-                
-                // Get integer value from provided option value.
-                int option_int = atoi(optarg);
 
                 // Check if the option value is out of boundaries or not.
-                if(option_int < option_descr[curr_opt].min_value || option_int > option_descr[curr_opt].max_value)
+                // if(option_int < option_descr[curr_opt].min_value || option_int > option_descr[curr_opt].max_value)
+                switch (SetOptionValue(&option_descr[curr_opt], &optarg))
                 {
-                    SeverityLog(SVRTY_LVL_ERR, "Provided option value is out of boundaries (%s) [%d-%d].\r\n",  option_descr[curr_opt].detail   ,
+                    case ERR_OPT_VALUE_OUT_OF_BOUNDS:
+                    {
+                        SeverityLog(SVRTY_LVL_ERR, "Provided option value is out of boundaries (%s) [%d-%d].\r\n",  option_descr[curr_opt].detail   ,
                                                                                                                 option_descr[curr_opt].min_value,
                                                                                                                 option_descr[curr_opt].max_value);
-                    return ERR_OPT_VALUE_OUT_OF_BOUNDS;
+                        return ERR_OPT_VALUE_OUT_OF_BOUNDS;
+                    }
+                    break;
+
+                    case ERR_OPT_UNKNOWN_VAR_TYPE:
+                    {
+                        SeverityLog(SVRTY_LVL_ERR, "Unknown variable type.\r\n");
+                        return ERR_OPT_UNKNOWN_VAR_TYPE;
+                    }
+                    break;
+                    
+                    default:
+                    break;
                 }
 
-                // Assign the given value to the current option.
-                option_descr[curr_opt].assigned_value = option_int;
+                option_descr[curr_opt].has_value = true;
+
                 break;
             }
         }
@@ -95,6 +169,20 @@ int ParseArguments(int argc, char** argv, option_description* option_descr, int 
         {
             SeverityLog(SVRTY_LVL_ERR, "Option %c does not exist.\r\n", option);
             return ERR_OPT_DOES_NOT_EXIST;
+        }
+    }
+
+    for(int curr_opt = 0; curr_opt < option_descr_size; curr_opt++)
+    {
+        if(option_descr[curr_opt].has_value == false)
+        {
+            // int set_opt_val = SetOptionValue(&option_descr[curr_opt], &option_descr[curr_opt].default_value);
+            // if(set_opt_val < 0)
+            // {
+            //     SeverityLog(SVRTY_LVL_ERR, "Unknown variable type.\r\n");
+            //     return ERR_OPT_UNKNOWN_VAR_TYPE;
+            // }
+            option_descr[curr_opt].assigned_value = option_descr[curr_opt].default_value;
         }
     }
 
